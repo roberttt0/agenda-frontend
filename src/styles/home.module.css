@@ -1,0 +1,35 @@
+.homeLayout {
+    height: 100vh;
+    width: 100vw;
+}
+
+.homeHeader {
+    height: 64px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 16px;
+    padding-right: 30px;
+    background-color: #004990;
+}
+
+.homeContent {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 160px;
+    gap: 12px;
+    flex-direction: column;
+}
+
+.homeFooter {
+    background-color: #eeeeee;
+    display: flex;
+    justify-content: flex-end;
+}
+
+@media (max-width: 768px) {
+    .homeContent {
+        padding-bottom: 80px;
+    }
+}
