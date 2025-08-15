@@ -1,16 +1,28 @@
-import React, {useState, useEffect, useMemo} from "react";
+import React, {useState} from "react";
 import {AutoComplete} from "antd";
 import {useMediaQuery} from "react-responsive";
-import debounce from 'lodash.debounce';
-import {getCompanies, getDepartments, getEmployees, getWorkPoints} from '../api/agendaApi.jsx';
+import debounce from 'lodash.debounce'
+import {getCompanies, getDepartments, getEmployees, getWorkPoints} from '../api/agendaApi.jsx'
 import {SearchOutlined} from "@ant-design/icons";
 
-export default function AppAutoComplete() {
+export default function OldAppAutoComplete() {
+
     const isMobile = useMediaQuery({query: '(max-width: 768px)'});
 
     const [options, setOptions] = useState([]);
 
-    const [searchValue, setSearchValue] = useState('');
+    const handleSearch = (value) => {
+        if (value.length >= 3) {
+            debounceFetcher(value)
+        } else {
+            debounceFetcher.cancel();
+            setOptions([])
+        }
+    }
+
+    const debounceFetcher = debounce((value) => {
+        fetchData(value);
+    }, 500)
 
     const fetchData = (value) => {
         Promise.all([
@@ -20,7 +32,10 @@ export default function AppAutoComplete() {
             getEmployees()
         ])
             .then(([companies, workPoints, departments, employees]) => {
-                const filteredOptions = [
+
+                if (value.length < 3) return;
+
+                const options = [
                     ...companies.data.map(i => ({
                         value: `${i.name} - Companie`,
                         key: `company-${i.id}`
@@ -37,44 +52,29 @@ export default function AppAutoComplete() {
                         value: `${i.firstName} ${i.lastName}`,
                         key: `employee-${i.id}`
                     }))
-                ].filter(option =>
-                    option.value.toUpperCase().includes(value.toUpperCase())
-                );
+                ];
 
-                setOptions(filteredOptions);
+                setOptions(options);
             })
             .catch(err => {
                 console.error(err);
             });
     };
 
-    const debounceFetcher = useMemo(() => debounce(fetchData, 500), []);
-
-    useEffect(() => {
-        if (searchValue.length >= 3) {
-            debounceFetcher(searchValue);
-        } else {
-            debounceFetcher.cancel();
-            setOptions([]);
-        }
-
-        return () => {
-            debounceFetcher.cancel();
-        };
-    }, [searchValue, debounceFetcher]);
-
     return (
         <AutoComplete
             style={{
-                ...(isMobile ? {width: "260px"} : {width: "800px"}),
-                textAlign: "center", fontStyle: "italic"
+            ...(isMobile ? {width: "260px"} : {width: "800px"}),
+            textAlign: "center", fontStyle: "italic"
             }}
+
             placeholder={isMobile ? "Cauta in agenda" : "Nume de persoane, puncte de lucru, departamente, companii"}
-            filterOption={false}
+            filterOption={(inputValue, option) =>
+                option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
+            }
             size={isMobile ? "medium" : "large"}
             options={options}
-            value={searchValue}
-            onChange={(data) => setSearchValue(data)}
+            onChange={handleSearch}
             suffixIcon={<SearchOutlined style={{
                 ...(isMobile ? {fontSize: '20px'} : {fontSize: '28px'}),
                 color: '#F68E1E'
