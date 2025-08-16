@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useMemo} from "react";
+import React, {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {AutoComplete} from "antd";
 import {useMediaQuery} from "react-responsive";
 import debounce from 'lodash.debounce';
@@ -9,10 +9,13 @@ export default function AppAutoComplete() {
     const isMobile = useMediaQuery({query: '(max-width: 768px)'});
 
     const [options, setOptions] = useState([]);
-
     const [searchValue, setSearchValue] = useState('');
 
-    const fetchData = (value) => {
+    const latestRequestId = useRef(0);
+
+    const fetchData = useCallback((value) => {
+        const requestId = ++latestRequestId.current;
+
         Promise.all([
             getCompanies(),
             getWorkPoints(),
@@ -20,6 +23,10 @@ export default function AppAutoComplete() {
             getEmployees()
         ])
             .then(([companies, workPoints, departments, employees]) => {
+                if (requestId !== latestRequestId.current) {
+                    return;
+                }
+
                 const filteredOptions = [
                     ...companies.data.map(i => ({
                         value: `${i.name} - Companie`,
@@ -44,11 +51,17 @@ export default function AppAutoComplete() {
                 setOptions(filteredOptions);
             })
             .catch(err => {
-                console.error(err);
+                if (requestId === latestRequestId.current) {
+                    console.error(err);
+                }
             });
-    };
+    }, [])
 
-    const debounceFetcher = useMemo(() => debounce(fetchData, 500), []);
+    const debounceFetcher = useMemo(() => {
+        return (
+            debounce(fetchData, 500)
+        )
+    }, [fetchData] )
 
     useEffect(() => {
         if (searchValue.length >= 3) {
@@ -56,6 +69,7 @@ export default function AppAutoComplete() {
         } else {
             debounceFetcher.cancel();
             setOptions([]);
+            latestRequestId.current = 0;
         }
 
         return () => {
