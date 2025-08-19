@@ -4,8 +4,7 @@ import {useMediaQuery} from "react-responsive";
 import debounce from 'lodash.debounce';
 import {getCompanies, getDepartments, getEmployees, getWorkPoints} from '../api/agendaApi.jsx';
 import {SearchOutlined} from "@ant-design/icons";
-
-export default function AppAutoComplete() {
+export default function AppAutoComplete({desktopWidth, mobileWidth, placeholder, mobilePlaceholder, desktopSize, mobileSize, mobileSufix, desktopSufix}) {
     const isMobile = useMediaQuery({query: '(max-width: 768px)'});
 
     const [options, setOptions] = useState([]);
@@ -95,17 +94,18 @@ export default function AppAutoComplete() {
     return (
         <AutoComplete
             style={{
-                ...(isMobile ? {width: "260px"} : {width: "800px"}),
-                textAlign: "center", fontStyle: "italic"
+                width: isMobile ? mobileWidth : desktopWidth,
+                textAlign: "center",
+                fontStyle: "italic"
             }}
-            placeholder={isMobile ? "Cauta in agenda" : "Nume de persoane, puncte de lucru, departamente, companii"}
+            placeholder={isMobile ? mobilePlaceholder : placeholder}
             filterOption={false}
-            size={isMobile ? "medium" : "large"}
+            size={isMobile ? mobileSize : desktopSize}
             options={options}
             value={searchValue}
             onChange={(data) => setSearchValue(data)}
             suffixIcon={<SearchOutlined style={{
-                ...(isMobile ? {fontSize: '20px'} : {fontSize: '28px'}),
+                ...(isMobile ? {fontSize: mobileSufix} : {fontSize: desktopSufix}),
                 color: '#F68E1E'
             }}/>}
         />

@@ -1,0 +1,62 @@
+.infoLayout {
+    height: 100vh;
+    width: 100vw;
+}
+
+.infoHeader {
+    height: 64px;
+    display: flex;
+    align-items: center;
+    background-color: #004990;
+    padding: 0;
+    margin: 0;
+}
+
+.icons {
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    justify-items: flex-end;
+    gap: 14px;
+    padding-right: 20px;
+    flex: 3
+}
+
+.searchBar {
+    display: flex;
+    flex: 2;
+    padding-left: 20px;
+    align-items: flex-start;
+}
+
+.logo {
+    display: flex;
+    justify-items: center;
+    flex: 1
+}
+
+.logo a {
+    display: flex;
+    justify-items: center;
+}
+
+.infoContent {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 160px;
+    gap: 12px;
+    flex-direction: column;
+}
+
+.infoFooter {
+    background-color: #eeeeee;
+    display: flex;
+    justify-content: flex-end;
+}
+
+@media (min-width: 768px) {
+    .icons {
+        padding-right: 60px;
+    }
+}
