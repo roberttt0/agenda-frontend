@@ -30,22 +30,30 @@ export default function AppAutoComplete() {
                 const filteredOptions = [
                     ...companies.data.map(i => ({
                         value: `${i.name} - Companie`,
-                        key: `company-${i.id}`
+                        key: `company-${i.id}`,
+                        type: "company"
                     })),
                     ...workPoints.data.map(i => ({
                         value: `${i.name} - Punct de Lucru`,
-                        key: `workpoint-${i.id}`
+                        key: `workpoint-${i.id}`,
+                        type: "workPoint"
                     })),
                     ...departments.data.map(i => ({
                         value: `${i.name} ${i.company} - Departament`,
-                        key: `department-${i.id}`
+                        key: `department-${i.id}`,
+                        type: "department"
                     })),
                     ...employees.data.map(i => ({
                         value: `${i.firstName} ${i.lastName}`,
-                        key: `employee-${i.id}`
+                        key: `employee-${i.id}`,
+                        type: "employee"
                     }))
-                ].filter(option =>
-                    option.value.toUpperCase().includes(value.toUpperCase())
+                ].filter(option => {
+                    const queryWords = normalizeString(value).split(/\s+/).filter(Boolean);
+                    const optionValue = option.value.toLowerCase();
+
+                    return queryWords.every(word => optionValue.includes(word));
+                    }
                 );
 
                 setOptions(filteredOptions);
@@ -76,6 +84,13 @@ export default function AppAutoComplete() {
             debounceFetcher.cancel();
         };
     }, [searchValue, debounceFetcher]);
+
+    const normalizeString = (str) => {
+        return str
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .toLowerCase();
+    }
 
     return (
         <AutoComplete
