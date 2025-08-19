@@ -1,51 +1,113 @@
-import React, {useState} from "react";
+import React, {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {AutoComplete} from "antd";
 import {useMediaQuery} from "react-responsive";
-import debounce from 'lodash.debounce'
-import {getEmployees} from '../api/agendaApi.jsx'
+import debounce from 'lodash.debounce';
+import {getCompanies, getDepartments, getEmployees, getWorkPoints} from '../api/agendaApi.jsx';
+import {SearchOutlined} from "@ant-design/icons";
 
 export default function AppAutoComplete() {
-
     const isMobile = useMediaQuery({query: '(max-width: 768px)'});
 
     const [options, setOptions] = useState([]);
+    const [searchValue, setSearchValue] = useState('');
 
-    const handleSearch = (value) => {
-        if (value.length >= 3) {
-            debounceFetcher()
+    const latestRequestId = useRef(0);
+
+    const fetchData = useCallback((value) => {
+        const requestId = ++latestRequestId.current;
+
+        Promise.all([
+            getCompanies(),
+            getWorkPoints(),
+            getDepartments(),
+            getEmployees()
+        ])
+            .then(([companies, workPoints, departments, employees]) => {
+                if (requestId !== latestRequestId.current) {
+                    return;
+                }
+
+                const filteredOptions = [
+                    ...companies.data.map(i => ({
+                        value: `${i.name} - Companie`,
+                        key: `company-${i.id}`,
+                        type: "company"
+                    })),
+                    ...workPoints.data.map(i => ({
+                        value: `${i.name} - Punct de Lucru`,
+                        key: `workpoint-${i.id}`,
+                        type: "workPoint"
+                    })),
+                    ...departments.data.map(i => ({
+                        value: `${i.name} ${i.company} - Departament`,
+                        key: `department-${i.id}`,
+                        type: "department"
+                    })),
+                    ...employees.data.map(i => ({
+                        value: `${i.firstName} ${i.lastName}`,
+                        key: `employee-${i.id}`,
+                        type: "employee"
+                    }))
+                ].filter(option => {
+                    const queryWords = normalizeString(value).split(/\s+/).filter(Boolean);
+                    const optionValue = option.value.toLowerCase();
+
+                    return queryWords.every(word => optionValue.includes(word));
+                    }
+                );
+
+                setOptions(filteredOptions);
+            })
+            .catch(err => {
+                if (requestId === latestRequestId.current) {
+                    console.error(err);
+                }
+            });
+    }, [])
+
+    const debounceFetcher = useMemo(() => {
+        return (
+            debounce(fetchData, 500)
+        )
+    }, [fetchData] )
+
+    useEffect(() => {
+        if (searchValue.length >= 3) {
+            debounceFetcher(searchValue);
         } else {
             debounceFetcher.cancel();
-            setOptions([])
+            setOptions([]);
+            latestRequestId.current = 0;
         }
-    }
 
-    const debounceFetcher = debounce(() => {
-        fetchData();
-    }, 500)
+        return () => {
+            debounceFetcher.cancel();
+        };
+    }, [searchValue, debounceFetcher]);
 
-    const fetchData = () => {
-        getEmployees()
-            .then((result) => {
-                setOptions(result.data.map(userObject => ({
-                    value: userObject.firstName + " " + userObject.lastName,
-                    key: userObject.id
-                })))
-            })
-            .catch((err) => {
-                console.log(err)
-            })
+    const normalizeString = (str) => {
+        return str
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .toLowerCase();
     }
 
     return (
         <AutoComplete
-            style={isMobile ? {width: "260px"} : {width: "800px"}}
-            placeholder={isMobile ? "Persoane, magazine, departamente" : "Nume de persoane, magazine, departamente"}
-            filterOption={(inputValue, option) =>
-                option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
-            }
+            style={{
+                ...(isMobile ? {width: "260px"} : {width: "800px"}),
+                textAlign: "center", fontStyle: "italic"
+            }}
+            placeholder={isMobile ? "Cauta in agenda" : "Nume de persoane, puncte de lucru, departamente, companii"}
+            filterOption={false}
             size={isMobile ? "medium" : "large"}
             options={options}
-            onChange={handleSearch}
+            value={searchValue}
+            onChange={(data) => setSearchValue(data)}
+            suffixIcon={<SearchOutlined style={{
+                ...(isMobile ? {fontSize: '20px'} : {fontSize: '28px'}),
+                color: '#F68E1E'
+            }}/>}
         />
     );
 }
