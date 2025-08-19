@@ -1,6 +1,6 @@
 .infoLayout {
-    height: 100vh;
-    width: 100vw;
+    height: auto;
+    width: 100%;
 }
 
 .infoHeader {
@@ -42,11 +42,11 @@
 
 .infoContent {
     display: flex;
-    justify-content: center;
     align-items: center;
-    padding-bottom: 160px;
-    gap: 12px;
+    padding-bottom: 40px;
+    gap: 20px;
     flex-direction: column;
+    padding-top: 40px;
 }
 
 .infoFooter {
@@ -58,5 +58,13 @@
 @media (min-width: 768px) {
     .icons {
         padding-right: 60px;
+    }
+
+    .infoContent {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        padding-top: 60px;
+        padding-bottom: 60px;
     }
 }

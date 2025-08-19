@@ -2,58 +2,142 @@ import React from "react";
 import {Card, Divider} from "antd";
 import {UserOutlined} from "@ant-design/icons";
 import styles from '../styles/card.module.css'
-import {Users, MapPin, Building, Phone, Mail} from "lucide-react"
+import {Building, Calendar, Clock, Locate, Mail, MapPin, Phone, Users} from "lucide-react"
 
-export default function AppCard() {
-
-    const user = {
-        "id": 1,
-        "firstName": "Elena",
-        "lastName": "Popescu",
-        "email": "elena.popescu@example.com",
-        "phoneNumber": "078828412",
-        "hireDate": "2017-01-04T00:00:00+00:00",
-        "job": "Tester",
-        "department": "DezvoltareSoft",
-        "workPoint": "Amazon Web Services (AWS) Office",
-        "Company": "Amazon",
-        "createdAt": "2025-08-15T16:18:50+00:00",
-        "updatedAt": "2025-08-15T16:18:50+00:00"
-    }
+export default function AppCard({data}) {
 
     return (
         <Card style={{width: "300px", height: "280px"}}>
             <div className={styles.mainInfo}>
-                <UserOutlined style={{fontSize: "32px", alignSelf: "flex-end", paddingBottom: "1px"}}/>
-                <div className={styles.nameJob}>
-                    <span className={styles.nameJobName}>{user.firstName} {user.lastName}</span>
-                    <span className={styles.nameJobJob}>{user.job}</span>
-                </div>
+                {data.type === "employee" ? (
+                    <>
+                        <UserOutlined style={{fontSize: "32px", alignSelf: "flex-end", paddingBottom: "1px"}}/>
+                        <div className={styles.nameJob}>
+                            <span className={styles.nameJobName}>{data.object.firstName} {data.object.lastName}</span>
+                            <span className={styles.nameJobJob}>{data.object.job}</span>
+                        </div>
+                    </>
+                ) : data.type === "company" ? (
+                    <>
+                        <Building size={32} style={{alignSelf: "flex-end", paddingBottom: "1px"}}/>
+                        <div className={styles.nameJob}>
+                            <span className={styles.nameJobName}>{data.object.name}</span>
+                            <span className={styles.nameJobJob}>{data.object.cui}</span>
+                        </div>
+                    </>
+                ) : data.type === "workPoint" ? (
+                    <>
+                        <MapPin size={32} style={{alignSelf: "flex-end", paddingBottom: "1px"}}/>
+                        <div className={styles.nameJob}>
+                            <span className={styles.nameJobName}>{data.object.name}</span>
+                            <span className={styles.nameJobJob}>{data.object.type}</span>
+                        </div>
+                    </>
+                ) : data.type === "department" ? (
+                    <>
+                        <Users size={32} style={{alignSelf: "flex-end", paddingBottom: "1px"}}/>
+                        <div className={styles.nameJob}>
+                            <span className={styles.nameJobName}>{data.object.name}</span>
+                            <span className={styles.nameJobJob}>{data.object.status}</span>
+                        </div>
+                    </>
+                ) : null
+                }
+
             </div>
             <div className={styles.jobInfo}>
-                <div>
-                    <Users size={16} />
-                    <span className={styles.jobDepartment}>{user.department}</span>
-                </div>
-                <div>
-                    <MapPin size={16} />
-                    <span className={styles.jobWorkPoint}>{user.workPoint}</span>
-                </div>
-                <div>
-                    <Building size={16} />
-                    <span className={styles.jobCompany}>{user.Company}</span>
-                </div>
+                {data.type === "employee" ? (
+                    <>
+                        <div>
+                            <Users size={16}/>
+                            <span className={styles.jobDepartment}>{data.object.department}</span>
+                        </div>
+                        <div>
+                            <MapPin size={16}/>
+                            <span className={styles.jobWorkPoint}>{data.object.workPoint}</span>
+                        </div>
+                        <div>
+                            <Building size={16}/>
+                            <span className={styles.jobCompany}>{data.object.Company}</span>
+                        </div>
+                    </>
+                ) : data.type === "company" ? (
+                    <>
+                        {/*<div>*/}
+                        {/*    <Calendar size={16}/>*/}
+                        {/*    <span className={styles.jobDepartment}>{company.yearCreated}</span>*/}
+                        {/*</div>*/}
+                    </>
+                ) : data.type === "workPoint" ? (
+                    <>
+                        <div>
+                            <Locate size={16}/>
+                            <span className={styles.jobDepartment}>{data.object.address}, {data.object.county}</span>
+                        </div>
+                        <div>
+                            <Building size={16}/>
+                            <span className={styles.jobWorkPoint}>{data.object.company}</span>
+                        </div>
+                        <div>
+                            <Clock size={16}/>
+                            <span
+                                className={styles.jobCompany}>{data.object.programStart.split("T")[1].substring(0, 5)} - {data.object.programEnd.split("T")[1].substring(0, 5)}</span>
+                        </div>
+                    </>
+                ) : data.type === "department" ? (
+                    <>
+                        <div>
+                            <MapPin size={16}/>
+                            <span className={styles.jobWorkPoint}>{data.object.workPoint}</span>
+                        </div>
+                        <div>
+                            <Building size={16}/>
+                            <span className={styles.jobCompany}>{data.object.Company}</span>
+                        </div>
+                    </>
+                ) : null
+                }
             </div>
             <Divider size={"small"}/>
             <div className={styles.contact}>
-                <div>
-                    <Phone size={16} />
-                    <span>{user.phoneNumber}</span>
-                </div>
-                <div>
-                    <Mail size={16} />
-                    <span>{user.email}</span>
-                </div>
+                {data.type === "employee" ? (
+                    <>
+                        <div>
+                            <Phone size={16}/>
+                            <span>{data.object.phoneNumber}</span>
+                        </div>
+                        <div>
+                            <Mail size={16}/>
+                            <span>{data.object.email}</span>
+                        </div>
+                    </>
+                ) : data.type === "company" ? (
+                    <>
+                        <div>
+                            <Calendar size={16}/>
+                            <span>{data.object.yearCreated}</span>
+                        </div>
+                    </>
+                ) : data.type === "workPoint" ? (
+                    <>
+                        <div>
+                            <Phone size={16}/>
+                            <span>{data.object.phoneNumber}</span>
+                        </div>
+                    </>
+                ) : data.type === "department" ? (
+                    <>
+                        <div>
+                            <Phone size={16}/>
+                            <span>{data.object.phoneNumber}</span>
+                        </div>
+                        <div>
+                            <Mail size={16}/>
+                            <span>{data.object.email}</span>
+                        </div>
+                    </>
+                ) : null
+                }
             </div>
         </Card>
     )

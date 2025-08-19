@@ -4,11 +4,35 @@ import {useMediaQuery} from "react-responsive";
 import debounce from 'lodash.debounce';
 import {getCompanies, getDepartments, getEmployees, getWorkPoints} from '../api/agendaApi.jsx';
 import {SearchOutlined} from "@ant-design/icons";
-export default function AppAutoComplete({desktopWidth, mobileWidth, placeholder, mobilePlaceholder, desktopSize, mobileSize, mobileSufix, desktopSufix}) {
+import {useLocation, useNavigate} from "react-router-dom";
+
+export default function AppAutoComplete({
+                                            desktopWidth,
+                                            mobileWidth,
+                                            placeholder,
+                                            mobilePlaceholder,
+                                            desktopSize,
+                                            mobileSize,
+                                            mobileSufix,
+                                            desktopSufix,
+                                        }) {
     const isMobile = useMediaQuery({query: '(max-width: 768px)'});
+    const navigate = useNavigate();
 
     const [options, setOptions] = useState([]);
     const [searchValue, setSearchValue] = useState('');
+
+    const query = new URLSearchParams(useLocation().search)
+    const search = query.get('value') || '';
+
+    // const a = useParams()
+    // console.log(search)
+    // console.log(a)
+
+
+    useEffect(() => {
+        setSearchValue(search)
+    }, [search])
 
     const latestRequestId = useRef(0);
 
@@ -48,10 +72,10 @@ export default function AppAutoComplete({desktopWidth, mobileWidth, placeholder,
                         type: "employee"
                     }))
                 ].filter(option => {
-                    const queryWords = normalizeString(value).split(/\s+/).filter(Boolean);
-                    const optionValue = option.value.toLowerCase();
+                        const queryWords = normalizeString(value).split(/\s+/).filter(Boolean);
+                        const optionValue = option.value.toLowerCase();
 
-                    return queryWords.every(word => optionValue.includes(word));
+                        return queryWords.every(word => optionValue.includes(word));
                     }
                 );
 
@@ -68,7 +92,7 @@ export default function AppAutoComplete({desktopWidth, mobileWidth, placeholder,
         return (
             debounce(fetchData, 500)
         )
-    }, [fetchData] )
+    }, [fetchData])
 
     useEffect(() => {
         if (searchValue.length >= 3) {
@@ -104,10 +128,23 @@ export default function AppAutoComplete({desktopWidth, mobileWidth, placeholder,
             options={options}
             value={searchValue}
             onChange={(data) => setSearchValue(data)}
-            suffixIcon={<SearchOutlined style={{
-                ...(isMobile ? {fontSize: mobileSufix} : {fontSize: desktopSufix}),
-                color: '#F68E1E'
-            }}/>}
+            suffixIcon={
+                <span
+                    onClick={() => navigate(`/info/?value=${searchValue}`)}
+                >
+                    <SearchOutlined style={{
+                        ...(isMobile ? {fontSize: mobileSufix} : {fontSize: desktopSufix}),
+                        color: '#F68E1E'
+                    }}/>
+                </span>}
+            onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                    navigate(`/info/?value=${searchValue}`)
+                }
+            }}
+            onSelect={(value) => {
+                navigate(`/info/?value=${value}`);
+            }}
         />
     );
 }
