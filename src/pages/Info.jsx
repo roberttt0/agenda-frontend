@@ -8,12 +8,16 @@ import logo from "../assets/dedeman_logo.png"
 import AppCard from "../components/AppCard.jsx";
 import {useLocation} from "react-router-dom";
 import {getCompanies, getDepartments, getEmployees, getWorkPoints} from "../api/agendaApi.jsx";
+import queryString from "query-string";
+import AppModal from "../components/AppModal.jsx";
 
 export default function Info() {
     const isMobile = useMediaQuery({query: '(max-width: 768px)'});
 
-    const query = new URLSearchParams(useLocation().search)
-    const search = query.get('value') || '';
+    const location = useLocation();
+
+    const parsed = queryString.parse(location.search);
+    const search = parsed.value || ''
 
     const [data, setData] = useState([])
 
@@ -79,12 +83,24 @@ export default function Info() {
         <Layout className={styles.infoLayout}>
             <Layout.Header className={styles.infoHeader}>
                 <div className={styles.logo}>
-                    <a href={"/"}><img src={logo} width={isMobile ? '50px' : '60px'} alt={"logo"}/></a>
+                    <Button
+                        style={{backgroundImage: `url(${logo})`, backgroundSize: "cover", backgroundPosition: "center",
+                        width: isMobile ? "32px" : "40px",
+                            marginLeft : isMobile ? "10px" : "20px"
+                        }}
+                        size={isMobile ? "middle" : "large"}
+                        href={'/'}
+                    />
                 </div>
                 <div className={styles.searchBar}>
-                    <AppAutoComplete mobileWidth={"180px"} desktopWidth={"300px"} mobileSize={"medium"}
-                                     desktopSize={"medium"} mobileSufix={"20px"} desktopSufix={"22px"}
-                                     placeholder={"Cauta in agenda"} mobilePlaceholder={"Cauta in agenda"}/>
+                    {
+                        isMobile ? <AppModal /> :
+                            <AppAutoComplete mobileWidth={"180px"} desktopWidth={"300px"} mobileSize={"medium"}
+                                             desktopSize={"medium"} mobileSufix={"20px"} desktopSufix={"22px"}
+                                             placeholder={"Cauta in agenda"} mobilePlaceholder={"Cauta in agenda"}/>
+                        // <AppModal />
+                    }
+
                 </div>
                 <div className={styles.icons}>
                     <Button
@@ -101,7 +117,6 @@ export default function Info() {
                 {
                     data.length ? (
                         data.map(item => {
-                            console.log(item)
                             return (
                                 <AppCard key={item.key} data={item}/>
                             )

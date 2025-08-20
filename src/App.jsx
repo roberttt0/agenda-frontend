@@ -3,6 +3,7 @@ import Home from "./pages/Home.jsx";
 import {ConfigProvider} from "antd";
 import {BrowserRouter, Route, Routes} from "react-router-dom";
 import Info from "./pages/Info.jsx";
+import Test from "./pages/Test.jsx";
 
 function App() {
 
@@ -19,6 +20,9 @@ function App() {
                     Select: {
                         hoverBorderColor: "#004990",
                         activeBorderColor: "#004990"
+                    },
+                    Modal: {
+                        contentBg: "#2C2C2C",
                     }
                 }
             }
@@ -28,6 +32,7 @@ function App() {
                 <Routes>
                     <Route path={'/'} element={<Home />} />
                     <Route path={'/info'} element={<Info />} />
+                    <Route path={'/test'} element={<Test />} />
                 </Routes>
             </BrowserRouter>
         </ConfigProvider>

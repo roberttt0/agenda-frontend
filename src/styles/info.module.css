@@ -36,11 +36,6 @@
     flex: 1
 }
 
-.logo a {
-    display: flex;
-    justify-items: center;
-}
-
 .infoContent {
     display: flex;
     align-items: center;

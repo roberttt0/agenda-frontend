@@ -16,6 +16,7 @@
     "axios": "^1.11.0",
     "lodash.debounce": "^4.0.8",
     "lucide-react": "^0.540.0",
+    "query-string": "^9.2.2",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-responsive": "^10.0.1",
