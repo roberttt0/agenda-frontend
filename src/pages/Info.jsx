@@ -99,11 +99,14 @@ export default function Info() {
             </Layout.Header>
             <Layout.Content className={styles.infoContent}>
                 {
-                    data.map(item => {
-                        console.log(item)
-                        return(
-                        <AppCard key={item.key} data={item} />
-                    )})
+                    data.length ? (
+                        data.map(item => {
+                            console.log(item)
+                            return (
+                                <AppCard key={item.key} data={item}/>
+                            )
+                        })
+                    ) : <p style={{fontSize: "16px"}}>Nu s-au gasit rezultate pentru cautarea ta</p>
                 }
             </Layout.Content>
             <Layout.Footer className={styles.infoFooter}>

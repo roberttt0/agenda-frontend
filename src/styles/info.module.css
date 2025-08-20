@@ -1,6 +1,7 @@
 .infoLayout {
     height: auto;
     width: 100%;
+    min-height: 100vh;
 }
 
 .infoHeader {
@@ -47,6 +48,7 @@
     gap: 20px;
     flex-direction: column;
     padding-top: 40px;
+    justify-content: center;
 }
 
 .infoFooter {
@@ -63,7 +65,6 @@
     .infoContent {
         flex-direction: row;
         flex-wrap: wrap;
-        justify-content: center;
         padding-top: 60px;
         padding-bottom: 60px;
     }

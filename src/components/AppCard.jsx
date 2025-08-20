@@ -71,17 +71,19 @@ export default function AppCard({data}) {
                 ) : data.type === "workPoint" ? (
                     <>
                         <div>
-                            <Locate size={16}/>
-                            <span className={styles.jobDepartment}>{data.object.address}, {data.object.county}</span>
-                        </div>
-                        <div>
-                            <Building size={16}/>
-                            <span className={styles.jobWorkPoint}>{data.object.company}</span>
-                        </div>
-                        <div>
                             <Clock size={16}/>
-                            <span
-                                className={styles.jobCompany}>{data.object.programStart.split("T")[1].substring(0, 5)} - {data.object.programEnd.split("T")[1].substring(0, 5)}</span>
+                            <span className={styles.jobDepartment}>
+                                {data.object.programStart.split("T")[1].substring(0, 5)} - {data.object.programEnd.split("T")[1].substring(0, 5)}
+                            </span>
+                        </div>
+                        <div>
+                            <Locate size={16}/>
+                            <span className={styles.jobWorkPoint}>{data.object.address}, {data.object.county}</span>
+                        </div>
+                        <div>
+
+                            <Building size={16}/>
+                            <span className={styles.jobCompany}>{data.object.company}</span>
                         </div>
                     </>
                 ) : data.type === "department" ? (
@@ -92,7 +94,7 @@ export default function AppCard({data}) {
                         </div>
                         <div>
                             <Building size={16}/>
-                            <span className={styles.jobCompany}>{data.object.Company}</span>
+                            <span className={styles.jobCompany}>{data.object.company}</span>
                         </div>
                     </>
                 ) : null
