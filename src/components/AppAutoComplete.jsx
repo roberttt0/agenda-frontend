@@ -16,6 +16,7 @@ export default function AppAutoComplete({
                                             mobileSufix,
                                             desktopSufix,
                                             setModalState,
+                                            inputRef
                                         }) {
     const isMobile = useMediaQuery({query: '(max-width: 768px)'});
     const navigate = useNavigate();
@@ -23,7 +24,8 @@ export default function AppAutoComplete({
     const [options, setOptions] = useState([]);
     const [searchValue, setSearchValue] = useState('');
 
-    const inputRef = useRef(null)
+    const internalRef = useRef(null)
+    const finalRef = inputRef || internalRef
     const latestRequestId = useRef(0);
 
     const fetchData = useCallback((value) => {
@@ -107,7 +109,7 @@ export default function AppAutoComplete({
 
     return (
         <AutoComplete
-            ref={inputRef}
+            ref={finalRef}
             style={{
                 width: isMobile ? mobileWidth : desktopWidth,
                 textAlign: "center",
@@ -123,7 +125,7 @@ export default function AppAutoComplete({
                 <span
                     onClick={() => {
                         navigate(`/info/?value=${searchValue}`)
-                        inputRef.current.blur();
+                        finalRef.current.blur();
                         setModalState(false);
                     }
                     }
@@ -136,13 +138,13 @@ export default function AppAutoComplete({
             onInputKeyDown={(e) => {
                 if (e.key === "Enter") {
                     navigate(`/info/?value=${searchValue}`)
-                    inputRef.current.blur();
+                    finalRef.current.blur();
                     setModalState(false)
                 }
             }}
             onSelect={(value) => {
                 navigate(`/info/?value=${value}`);
-                inputRef.current.blur();
+                finalRef.current.blur();
                 setModalState(false)
             }}
         />

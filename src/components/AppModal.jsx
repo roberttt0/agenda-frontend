@@ -1,10 +1,11 @@
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import {Button, Modal} from 'antd';
 import {SearchOutlined} from "@ant-design/icons";
 import AppAutoComplete from "./AppAutoComplete.jsx";
 
 const AppModal = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const inputRef = useRef(null)
 
     const handleCancel = () => {
         setIsModalOpen(false);
@@ -40,13 +41,13 @@ const AppModal = () => {
                 onCancel={handleCancel}
                 footer={null}
                 styles={modalStyles}
+                afterOpenChange={(open) => open && inputRef.current?.focus()}
             >
                 <AppAutoComplete desktopWidth={"800px"} mobileWidth={"300px"} mobilePlaceholder={"Cauta in agenda"}
                                  placeholder={"Nume de persoane, puncte de lucru, departamente, companii"}
                                  mobileSize={"large"} desktopSize={"large"} mobileSufix={"20px"} desktopSufix={"28px"}
-                                 setModalState={setIsModalOpen}/>
+                                 setModalState={setIsModalOpen} inputRef={inputRef} />
             </Modal>
-
         </>
     );
 };

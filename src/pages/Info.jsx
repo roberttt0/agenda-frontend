@@ -98,9 +98,7 @@ export default function Info() {
                             <AppAutoComplete mobileWidth={"180px"} desktopWidth={"300px"} mobileSize={"medium"}
                                              desktopSize={"medium"} mobileSufix={"20px"} desktopSufix={"22px"}
                                              placeholder={"Cauta in agenda"} mobilePlaceholder={"Cauta in agenda"}/>
-                        // <AppModal />
                     }
-
                 </div>
                 <div className={styles.icons}>
                     <Button

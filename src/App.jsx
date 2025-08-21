@@ -10,6 +10,9 @@ function App() {
     return (
         <ConfigProvider
             theme={{
+                token: {
+                    colorPrimaryBorder: "null"
+                },
                 components: {
                     Button: {
                         defaultHoverColor: "#004990",
@@ -23,6 +26,7 @@ function App() {
                     },
                     Modal: {
                         contentBg: "#2C2C2C",
+                        colorPrimaryBorder: "red"
                     }
                 }
             }
