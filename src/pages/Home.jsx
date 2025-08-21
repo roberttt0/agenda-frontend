@@ -29,6 +29,10 @@ export default function Home() {
             <Layout.Content className={styles.homeContent}>
                 <a href={"/"}><img src={logo} width={isMobile ? '240px' : '320px' } alt={"logo"}/></a>
                 <AppAutoComplete desktopWidth={"800px"} mobileWidth={"260px"} mobilePlaceholder={"Cauta in agenda"} placeholder={"Nume de persoane, puncte de lucru, departamente, companii"} mobileSize={"medium"} desktopSize={"large"} mobileSufix={"20px"} desktopSufix={"28px"} />
+                <div className={styles.homeButtons}>
+                    <Button style={{width: isMobile ? "140px" : "180px"}} size={isMobile ? "medium" : "large"}>Cautare avansata</Button>
+                    <Button style={{width: isMobile ? "140px" : "180px"}} size={isMobile ? "medium" : "large"} href={'/work-points'}>Lista magazine</Button>
+                </div>
             </Layout.Content>
             <Layout.Footer className={styles.homeFooter}>
                 © {currentYear} Dedeman. Toate drepturile rezervate.
