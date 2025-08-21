@@ -4,13 +4,28 @@ import {useMediaQuery} from "react-responsive";
 import debounce from 'lodash.debounce';
 import {getCompanies, getDepartments, getEmployees, getWorkPoints} from '../api/agendaApi.jsx';
 import {SearchOutlined} from "@ant-design/icons";
+import {useNavigate} from "react-router-dom";
 
-export default function AppAutoComplete() {
+export default function AppAutoComplete({
+                                            desktopWidth,
+                                            mobileWidth,
+                                            placeholder,
+                                            mobilePlaceholder,
+                                            desktopSize,
+                                            mobileSize,
+                                            mobileSufix,
+                                            desktopSufix,
+                                            setModalState,
+                                            inputRef
+                                        }) {
     const isMobile = useMediaQuery({query: '(max-width: 768px)'});
+    const navigate = useNavigate();
 
     const [options, setOptions] = useState([]);
     const [searchValue, setSearchValue] = useState('');
 
+    const internalRef = useRef(null)
+    const finalRef = inputRef || internalRef
     const latestRequestId = useRef(0);
 
     const fetchData = useCallback((value) => {
@@ -49,10 +64,10 @@ export default function AppAutoComplete() {
                         type: "employee"
                     }))
                 ].filter(option => {
-                    const queryWords = normalizeString(value).split(/\s+/).filter(Boolean);
-                    const optionValue = option.value.toLowerCase();
+                        const queryWords = normalizeString(value).split(/\s+/).filter(Boolean);
+                        const optionValue = option.value.toLowerCase();
 
-                    return queryWords.every(word => optionValue.includes(word));
+                        return queryWords.every(word => optionValue.includes(word));
                     }
                 );
 
@@ -69,7 +84,7 @@ export default function AppAutoComplete() {
         return (
             debounce(fetchData, 500)
         )
-    }, [fetchData] )
+    }, [fetchData])
 
     useEffect(() => {
         if (searchValue.length >= 3) {
@@ -94,20 +109,44 @@ export default function AppAutoComplete() {
 
     return (
         <AutoComplete
+            ref={finalRef}
             style={{
-                ...(isMobile ? {width: "260px"} : {width: "800px"}),
-                textAlign: "center", fontStyle: "italic"
+                width: isMobile ? mobileWidth : desktopWidth,
+                textAlign: "center",
+                fontStyle: "italic"
             }}
-            placeholder={isMobile ? "Cauta in agenda" : "Nume de persoane, puncte de lucru, departamente, companii"}
+            placeholder={isMobile ? mobilePlaceholder : placeholder}
             filterOption={false}
-            size={isMobile ? "medium" : "large"}
+            size={isMobile ? mobileSize : desktopSize}
             options={options}
             value={searchValue}
             onChange={(data) => setSearchValue(data)}
-            suffixIcon={<SearchOutlined style={{
-                ...(isMobile ? {fontSize: '20px'} : {fontSize: '28px'}),
-                color: '#F68E1E'
-            }}/>}
+            suffixIcon={
+                <span
+                    onClick={() => {
+                        navigate(`/info/?value=${searchValue}`)
+                        finalRef.current.blur();
+                        setModalState(false);
+                    }
+                    }
+                >
+                    <SearchOutlined style={{
+                        ...(isMobile ? {fontSize: mobileSufix} : {fontSize: desktopSufix}),
+                        color: '#F68E1E'
+                    }}/>
+                </span>}
+            onInputKeyDown={(e) => {
+                if (e.key === "Enter") {
+                    navigate(`/info/?value=${searchValue}`)
+                    finalRef.current.blur();
+                    setModalState(false)
+                }
+            }}
+            onSelect={(value) => {
+                navigate(`/info/?value=${value}`);
+                finalRef.current.blur();
+                setModalState(false)
+            }}
         />
     );
 }

@@ -1,0 +1,66 @@
+.infoLayout {
+    height: auto;
+    width: 100%;
+    min-height: 100vh;
+}
+
+.infoHeader {
+    height: 64px;
+    display: flex;
+    align-items: center;
+    background-color: #004990;
+    padding: 0;
+    margin: 0;
+}
+
+.icons {
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    justify-items: flex-end;
+    gap: 14px;
+    padding-right: 20px;
+    flex: 3
+}
+
+.searchBar {
+    display: flex;
+    flex: 2;
+    padding-left: 20px;
+    align-items: flex-start;
+}
+
+.logo {
+    display: flex;
+    justify-items: center;
+    flex: 1
+}
+
+.infoContent {
+    display: flex;
+    align-items: center;
+    padding-bottom: 40px;
+    gap: 20px;
+    flex-direction: column;
+    padding-top: 40px;
+    justify-content: center;
+}
+
+.infoFooter {
+    background-color: #eeeeee;
+    display: flex;
+    justify-content: flex-end;
+}
+
+@media (min-width: 768px) {
+    .icons {
+        padding-right: 60px;
+    }
+
+    .infoContent {
+        flex-direction: row;
+        flex-wrap: wrap;
+        padding-top: 60px;
+        padding-bottom: 60px;
+    }
+}

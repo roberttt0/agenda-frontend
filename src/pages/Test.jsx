@@ -1,14 +1,19 @@
 import React from 'react';
-import { useMediaQuery } from 'react-responsive';
+import AppModal from "../components/AppModal.jsx";
 
 export default function Test() {
-    const isTabletOrMobile = useMediaQuery({ query: '(max-width: 768px)' });
+
+    const testLayout= {
+        backgroundColor: "#515151",
+        minHeight: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center"
+    }
 
     return (
-        <div style={{ padding: 20 }}>
-            <h1>Test useMediaQuery</h1>
-            <p>Viewport width: {window.innerWidth}px</p>
-            <p>isTabletOrMobile: {isTabletOrMobile ? '✅ TRUE' : '❌ FALSE'}</p>
+        <div style={testLayout}>
+            <AppModal />
         </div>
     );
 }
