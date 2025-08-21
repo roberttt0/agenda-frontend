@@ -8,5 +8,7 @@ const getCompanies = () => api.get('/companies');
 const getDepartments = () => api.get('/departments');
 const getEmployees = () => api.get('/employees');
 const getWorkPoints = () => api.get('/work-points');
+const getEmployeesByWorkPointId = (id) => api.get (`/work-points/${id}/employees`)
+const getWorkPointById = (id) => api.get(`/work-points/${id}`)
 
-export { getCompanies, getDepartments, getEmployees, getWorkPoints }
+export { getCompanies, getDepartments, getEmployees, getWorkPoints, getEmployeesByWorkPointId, getWorkPointById }
