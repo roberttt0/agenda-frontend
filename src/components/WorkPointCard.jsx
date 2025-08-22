@@ -4,7 +4,6 @@ import styles from '../styles/workpointcard.module.css'
 import {Building, MapPin, Building2, Phone} from 'lucide-react'
 
 export default function WorkPointCard({wp}) {
-    console.log(wp)
     return (
         <Card
             style={{width: "100%"}}
