@@ -5,6 +5,7 @@ import {Building, Building2, MapPin, Phone} from 'lucide-react'
 import EmployeesDrawer from "./EmployeesDrawer.jsx";
 
 export default function WorkPointCard({wp}) {
+    console.log(wp)
     return (
         <Card
             style={{width: "100%"}}

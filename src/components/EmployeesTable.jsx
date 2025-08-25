@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {getEmployeesByWorkPointId, getWorkPointById} from "../api/agendaApi.jsx";
-import {Table} from "antd";
-import {Building} from 'lucide-react';
+import {Button, Table} from "antd";
+import {Building, X} from 'lucide-react';
 
 export default function EmployeesTable({id}) {
     const [data, setData] = useState([]);
@@ -94,7 +94,7 @@ export default function EmployeesTable({id}) {
                     alignItems: "center"
                 }}>
                     <Building size={24}/>
-                    <div style={{fontWeight: "bold", color: "#34d399"}}>{wp?.name}</div>
+                    <div style={{fontWeight: "bold", color:"#34d399"}}>{wp?.name}</div>
                     <div>|</div>
                     <div style={{color: "#6B7280"}}>{wp?.address}, {wp?.county}</div>
                     <div>|</div>

@@ -30,58 +30,11 @@ export default function WorkPoints() {
                             {}
                         )
 
-                setData(combineSmallKeys(filteredData));
-                combineSmallKeys(filteredData)
+                setData(filteredData);
+                console.log(filteredData)
             })
             .catch(err => console.error(err))
     }, []);
-
-    function combineSmallKeys(obj, minElements = 3) {
-        const result = {};
-        const keys = Object.keys(obj).sort();
-        const processedKeys = new Set();
-
-        for (let i = 0; i < keys.length; i++) {
-            const currentKey = keys[i];
-
-            if (processedKeys.has(currentKey)) {
-                continue;
-            }
-
-            let combinedKey = currentKey;
-            let combinedItems = [...obj[currentKey]];
-            processedKeys.add(currentKey);
-
-            if (obj[currentKey].length < minElements) {
-                for (let j = i + 1; j < keys.length && combinedItems.length < minElements; j++) {
-                    const nextKey = keys[j];
-
-                    if (!processedKeys.has(nextKey)) {
-                        combinedKey += nextKey;
-                        combinedItems = combinedItems.concat(obj[nextKey]);
-                        processedKeys.add(nextKey);
-                    }
-                }
-
-                if (combinedItems.length < minElements) {
-                    for (let j = 0; j < i && combinedItems.length < minElements; j++) {
-                        const prevKey = keys[j];
-
-                        if (!processedKeys.has(prevKey)) {
-                            combinedKey = prevKey + combinedKey;
-                            combinedItems = obj[prevKey].concat(combinedItems);
-                            processedKeys.add(prevKey);
-                        }
-                    }
-                }
-            }
-
-            result[combinedKey] = combinedItems;
-        }
-        console.log(result)
-        return result;
-    }
-
 
     function getColorFromLetter(letter) {
         const colors = ["#FFD700", "#87CEEB", "#90EE90", "#FFB6C1", "#FFA07A"];
@@ -96,12 +49,11 @@ export default function WorkPoints() {
                 {
                     Object.entries(data).map(([letter, items]) => (
                         <div key={letter} className={styles.category}>
-                            <div className={styles.letter}
-                                 style={{backgroundColor: getColorFromLetter(letter)}}>{letter}</div>
+                            <div className={styles.letter} style={{backgroundColor: getColorFromLetter(letter)}}>{letter}</div>
                             <div className={styles.cards}>
-                                {
-                                    items.map(wp => <WorkPointCard key={`${wp.key}`} wp={wp.object}/>)
-                                }
+                            {
+                                items.map(wp => <WorkPointCard key={`${wp.key}`} wp={wp.object} />)
+                            }
                             </div>
                         </div>
                     ))
