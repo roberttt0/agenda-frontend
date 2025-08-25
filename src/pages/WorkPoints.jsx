@@ -31,7 +31,6 @@ export default function WorkPoints() {
                         )
 
                 setData(filteredData);
-                console.log(filteredData)
             })
             .catch(err => console.error(err))
     }, []);

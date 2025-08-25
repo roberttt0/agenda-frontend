@@ -1,10 +1,11 @@
-import {Button, Drawer} from "antd";
+import {Button, Drawer, Input} from "antd";
 import EmployeesTable from "./EmployeesTable.jsx";
 import {useState} from "react";
 
 export default function EmployeesDrawer({id}) {
 
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+    const [text, setText] = useState("")
     const handleCancel = () => {
         setIsDrawerOpen(false);
     };
@@ -39,8 +40,19 @@ export default function EmployeesDrawer({id}) {
                 width="100%"
                 style={{height: "100vh", padding: 0, margin: 0}}
                 styles={drawerStyles}
+                extra={
+                    <div style={{display: "flex", alignItems: "left"}}>
+                        <Input
+                            placeholder={"Cauta"}
+                            onChange={(e) => setText(e.target.value)}
+                            style={{
+                                fontStyle: "italic"
+                            }}
+                        />
+                    </div>
+                }
             >
-                <EmployeesTable id={id}/>
+                <EmployeesTable id={id} text={text}/>
             </Drawer>
         </>
     )

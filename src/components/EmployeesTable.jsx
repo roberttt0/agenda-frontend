@@ -1,27 +1,73 @@
-import React, {useEffect, useState} from "react";
+import React, {useCallback, useEffect, useMemo, useState} from "react";
 import {getEmployeesByWorkPointId, getWorkPointById} from "../api/agendaApi.jsx";
-import {Button, Table} from "antd";
-import {Building, X} from 'lucide-react';
+import {Table} from "antd";
+import {Building} from 'lucide-react';
+import {normalizeString} from "../services/AppService.jsx";
+import debounce from "lodash.debounce";
+import styles from '../styles/loading.module.css'
 
-export default function EmployeesTable({id}) {
+export default function EmployeesTable({id, text}) {
     const [data, setData] = useState([]);
     const [wp, setWp] = useState();
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         getWorkPointById(id)
             .then(result => setWp(result.data))
             .catch(err => console.error(err));
+    }, [id]);
 
+    const fetchData = useCallback(() => {
         getEmployeesByWorkPointId(id)
             .then((d) => {
                 const employees = d.data.map((item) => ({
                     ...item,
                     key: item.id,
-                }));
+                })).filter(option => {
+                    const queryWords = normalizeString(text).split(/\s+/).filter(Boolean);
+                    const optionValue = [option.firstName.toLowerCase(),
+                        option.lastName.toLowerCase(),
+                        option.job.toLowerCase(),
+                        option.department.toLowerCase()
+                    ].join(" ");
+
+                    return queryWords.every(word => optionValue.includes(word));
+                })
+
                 setData(employees);
+                setLoading(false)
             })
-            .catch((err) => console.error(err));
-    }, [id]);
+            .catch((err) => {
+                console.error(err)
+                setLoading(false)
+            });
+    }, [id, text]);
+
+    const debounceFetcher = useMemo(() => {
+        return (
+            debounce(fetchData, 500)
+        )
+    }, [fetchData])
+
+    useEffect(() => {
+        if (!text) {
+            fetchData()
+        }
+        else {
+            debounceFetcher()
+        }
+
+        // debouceFetcher()
+        return () => {
+            debounceFetcher.cancel();
+        };
+    }, [debounceFetcher, text, fetchData]);
+
+    if (loading) {
+        return (
+            <div className={styles.spinner}></div>
+        );
+    }
 
     const columns = [
         {
@@ -94,7 +140,7 @@ export default function EmployeesTable({id}) {
                     alignItems: "center"
                 }}>
                     <Building size={24}/>
-                    <div style={{fontWeight: "bold", color:"#34d399"}}>{wp?.name}</div>
+                    <div style={{fontWeight: "bold", color: "#34d399"}}>{wp?.name}</div>
                     <div>|</div>
                     <div style={{color: "#6B7280"}}>{wp?.address}, {wp?.county}</div>
                     <div>|</div>
