@@ -1,11 +1,14 @@
 import {Button, Drawer, Input} from "antd";
 import EmployeesTable from "./EmployeesTable.jsx";
 import {useState} from "react";
+import {useIsMobile} from "../services/AppService.jsx";
 
 export default function EmployeesDrawer({id}) {
 
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [text, setText] = useState("")
+
+    const isMobile = useIsMobile()
     const handleCancel = () => {
         setIsDrawerOpen(false);
     };
@@ -31,7 +34,7 @@ export default function EmployeesDrawer({id}) {
     return (
         <>
             <Button onClick={showDrawer}>
-                Vezi lista de contacte
+                {isMobile ? "Contacte" : "Vezi lista de contacte"}
             </Button>
             <Drawer
                 open={isDrawerOpen}

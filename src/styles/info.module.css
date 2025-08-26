@@ -65,8 +65,12 @@
 
 .letter {
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+    z-index: 10;
     width: 30px;
     height: auto;
     border-radius: 8px 8px 8px 8px;

@@ -30,3 +30,13 @@
     width: 10%
 }
 
+@media (max-width: 768px) {
+    .card {
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .name {
+        width: auto
+    }
+}

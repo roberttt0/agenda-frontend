@@ -2,7 +2,7 @@ import React, {useCallback, useEffect, useMemo, useState} from "react";
 import {getEmployeesByWorkPointId, getWorkPointById} from "../api/agendaApi.jsx";
 import {Table} from "antd";
 import {Building} from 'lucide-react';
-import {normalizeString} from "../services/AppService.jsx";
+import {normalizeString, useIsMobile} from "../services/AppService.jsx";
 import debounce from "lodash.debounce";
 import styles from '../styles/loading.module.css'
 
@@ -10,6 +10,7 @@ export default function EmployeesTable({id, text}) {
     const [data, setData] = useState([]);
     const [wp, setWp] = useState();
     const [loading, setLoading] = useState(true);
+    const isMobile = useIsMobile()
 
     useEffect(() => {
         getWorkPointById(id)
@@ -52,8 +53,7 @@ export default function EmployeesTable({id, text}) {
     useEffect(() => {
         if (!text) {
             fetchData()
-        }
-        else {
+        } else {
             debounceFetcher()
         }
 
@@ -128,7 +128,7 @@ export default function EmployeesTable({id, text}) {
     return (
         <Table
             dataSource={data}
-            columns={columns}
+            columns={isMobile ? columns.slice(0, 3) : columns}
             pagination={false}
             sticky
             title={() => (
@@ -141,10 +141,14 @@ export default function EmployeesTable({id, text}) {
                 }}>
                     <Building size={24}/>
                     <div style={{fontWeight: "bold", color: "#34d399"}}>{wp?.name}</div>
-                    <div>|</div>
-                    <div style={{color: "#6B7280"}}>{wp?.address}, {wp?.county}</div>
-                    <div>|</div>
-                    <div style={{color: "#1E3A8A"}}>{wp?.phoneNumber}</div>
+                    {!isMobile && (
+                        <>
+                            <div>|</div>
+                            <div style={{color: "#6B7280"}}>{wp?.address}, {wp?.county}</div>
+                            <div>|</div>
+                            <div style={{color: "#1E3A8A"}}>{wp?.phoneNumber}</div>
+                        </>
+                    )}
                 </div>
             )}
             style={{minHeight: "100vh"}}

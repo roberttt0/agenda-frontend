@@ -1,3 +1,4 @@
+import {useMediaQuery} from "react-responsive";
 
 
 const normalizeString = (str="") => {
@@ -7,4 +8,8 @@ const normalizeString = (str="") => {
         .toLowerCase();
 }
 
-export {normalizeString}
+function useIsMobile() {
+    return useMediaQuery({ query: "(max-width: 768px)" });
+}
+
+export {normalizeString, useIsMobile}
