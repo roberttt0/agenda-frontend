@@ -11,23 +11,22 @@
 }
 
 .name {
-    width: 25%
+    width: 25%;
+    font-weight: bold;
 }
 
 .address {
     width: 25%;
+    color: #595959
 }
 
 .company {
     width: 10%;
 }
 
-.county {
-    width: 10%;
-}
-
 .phoneNumber {
-    width: 10%
+    width: 10%;
+    color: #595959
 }
 
 @media (max-width: 768px) {

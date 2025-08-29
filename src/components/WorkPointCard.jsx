@@ -15,28 +15,28 @@ export default function WorkPointCard({wp}) {
         >
             <div className={styles.card}>
                 <div className={styles.name}>
-                    <Building size={15}/>
-                    <div style={{fontSize: "15px"}}>{wp.name}</div>
+                    <Building size={20}/>
+                    <div style={{fontSize: "14px"}}>{wp.name}</div>
                 </div>
 
                 {!isMobile && (
                     <>
                         <div className={styles.address}>
-                            <MapPin size={15}/>
-                            <div style={{fontSize: "15px"}}>{wp.address}, {wp.county}</div>
+                            <MapPin size={20}/>
+                            <div style={{fontSize: "14px"}}>{wp.address}, {wp.county}</div>
                         </div>
                         <div className={styles.company}>
-                            <Building2 size={15}/>
-                            <div style={{fontSize: "15px"}}>{wp.company}</div>
+                            <Building2 size={20}/>
+                            <div style={{fontSize: "14px"}}>{wp.company}</div>
                         </div>
                         <div className={styles.phoneNumber}>
-                            <Phone size={15}/>
-                            <div style={{fontSize: "15px"}}>{wp.phoneNumber}</div>
+                            <Phone size={20}/>
+                            <div style={{fontSize: "14px"}}>{wp.phoneNumber}</div>
                         </div>
                     </>
                 )}
 
-                <div className={styles.button}>
+                <div>
                     <EmployeesDrawer id={wp.id}/>
                 </div>
             </div>

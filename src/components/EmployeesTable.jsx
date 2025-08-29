@@ -117,11 +117,13 @@ export default function EmployeesTable({id, text}) {
             title: 'Tel. interior',
             dataIndex: 'phoneNumber',
             key: 'phone',
+            render: text => <p style={{color: "#595959"}}>{text}</p>
         },
         {
             title: 'Adresa de email',
             dataIndex: 'email',
             key: 'email',
+            render: text => <p style={{color: "#595959"}}>{text}</p>
         },
     ];
 

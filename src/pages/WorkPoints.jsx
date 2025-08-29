@@ -5,6 +5,7 @@ import styles from '../styles/info.module.css'
 import {getWorkPoints} from "../api/agendaApi.jsx";
 import WorkPointCard from "../components/WorkPointCard.jsx";
 import {normalizeString} from "../services/AppService.jsx";
+import {BookText} from "lucide-react";
 
 export default function WorkPoints() {
 
@@ -55,7 +56,7 @@ export default function WorkPoints() {
             if (keys.includes(normalizeString(letter).toUpperCase()))
                 combinedItems = combinedItems.concat(wp[letter])
 
-            if(combinedItems.length > 2) {
+            if (combinedItems.length > 2) {
                 result[combinedKey] = combinedItems
                 combinedKey = ""
                 combinedItems = []
@@ -78,21 +79,31 @@ export default function WorkPoints() {
     return (
         <Layout className={styles.infoLayout}>
             <SearchHeader/>
+            <div className={styles.workPointsTitle}>
+                <BookText size={30}/>
+                <div>Lista puncte de lucru</div>
+            </div>
             <Layout.Content className={styles.workPointsLayout}>
                 {
                     Object.entries(data).map(([letter, items]) => (
                         <div key={letter} className={styles.category}>
-                            <div className={styles.letter} style={{backgroundColor: getColorFromLetter(letter)}}>
+                            <div className={styles.letter}>
                                 {
-                                    letter.split("").map((letter, index) => (
-                                            <div key={index}>{letter}</div>
-                                        ))
+                                    // letter.split("").map((letter, index) => (
+                                    //     <div key={index}>{letter}</div>
+                                    // ))
+                                    letter.length > 1 ? `${letter.at(0)}-${letter.at(-1)}` : letter.at(0)
                                 }
                             </div>
-                            <div className={styles.cards}>
-                            {
-                                items.map(wp => <WorkPointCard key={`${wp.key}`} wp={wp.object} />)
-                            }
+                            <div className={styles.infoLetterLayout}>
+                                <div className={styles.letterBackground}
+                                     style={{backgroundColor: getColorFromLetter(letter)}}>
+                                </div>
+                                <div className={styles.cards}>
+                                    {
+                                        items.map(wp => <WorkPointCard key={`${wp.key}`} wp={wp.object}/>)
+                                    }
+                                </div>
                             </div>
                         </div>
                     ))
