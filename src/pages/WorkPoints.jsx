@@ -89,9 +89,6 @@ export default function WorkPoints() {
                         <div key={letter} className={styles.category}>
                             <div className={styles.letter}>
                                 {
-                                    // letter.split("").map((letter, index) => (
-                                    //     <div key={index}>{letter}</div>
-                                    // ))
                                     letter.length > 1 ? `${letter.at(0)}-${letter.at(-1)}` : letter.at(0)
                                 }
                             </div>
