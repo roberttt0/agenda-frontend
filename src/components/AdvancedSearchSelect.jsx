@@ -1,243 +1,332 @@
-import React, {useCallback, useEffect, useState} from 'react';
-import {Button, Select, Space} from 'antd';
+import React, {useEffect, useState} from "react";
+import {Button, Input, Select} from "antd";
 import {
     getCompanies,
-    getCompaniesDepartments,
-    getCompany,
-    getDepartmentById,
+    getCounties,
     getDepartments,
+    getDepartmentsInfo,
     getJobs,
-    getWorkPointById,
-    getWorkPoints, getWorkPointsDepartments
+    getJobsInfo,
+    getWorkPoints
 } from "../api/agendaApi.jsx";
+import styles from "../styles/loading.module.css";
+import {useIsMobile} from "../services/AppService.jsx";
 
-export default function AdvancedSearchSelect() {
+export default function AdvancedSearchSelect({onFiltersChange}) {
 
-    const [companiesData, setCompaniesData] = useState([])
-    const [workPointsData, setWorkPointsData] = useState([])
-    const [departmentsData, setDepartmentsData] = useState([])
-    const [jobsData, setJobsData] = useState([])
+    const [companies, setCompanies] = useState([])
+    const [workPoints, setWorkPoints] = useState([])
+    const [departments, setDepartments] = useState([])
+    const [jobs, setJobs] = useState([])
+    const [counties, setCounties] = useState([])
 
-    const [companyInput, setCompanyInput] = useState()
-    const [workPointInput, setWorkPointInput] = useState()
-    const [departmentInput, setDepartmentInput] = useState()
-    const [jobInput, setJobInput] = useState()
+    const [loading, setLoading] = useState(true);
+    const isMobile = useIsMobile()
 
+    const [companyOption, setCompanyOption] = useState()
+    const [workPointOption, setWorkPointOption] = useState()
+    const [departmentOption, setDepartmentOption] = useState()
+    const [jobOption, setJobOption] = useState()
+    const [countyOption, setCountyOption] = useState()
+    const [phone, setPhone] = useState("")
 
     useEffect(() => {
-        fetchCompanies()
+        fetchData()
     }, []);
 
     useEffect(() => {
-        fetchWorkPoints()
-    }, []);
+        onFiltersChange({
+            company: companyOption,
+            workPoint: workPointOption,
+            department: departmentOption,
+            job: jobOption,
+            county: countyOption,
+            phone: phone
+        });
+    }, [companyOption, workPointOption, departmentOption, jobOption, countyOption, phone, onFiltersChange]);
 
-    useEffect(() => {
-        fetchDepartments()
-    }, []);
+    const fetchData = () => {
+        Promise.all([
+            getCompanies(),
+            getWorkPoints(),
+            getDepartments(),
+            getJobs(),
+            getDepartmentsInfo(),
+            getJobsInfo(),
+            getCounties()
+        ])
+            .then(([companiesData, workPointsData, departmentsData, jobsData, departmentsInfoData, jobsInfoData, countyData]) => {
+                const departmentsGrouped = departmentsInfoData.data.map(di => ({
+                    departmentInfoId: di.id,
+                    departmentName: di.name,
+                    departments: departmentsData.data
+                        .filter(d => d.departmentNameId === di.id)
+                        .map(d => ({
+                            departmentId: d.id,
+                            workPointId: d.workPointId,
+                            companyId: d.companyId
+                        }))
+                }))
 
-    useEffect(() => {
-        fetchJobs()
-    }, []);
+                const jobsGrouped = jobsInfoData.data.map(ji => ({
+                    jobInfoId: ji.id,
+                    jobName: ji.name,
+                    jobs: jobsData.data
+                        .filter(j => j.jobNameId === ji.id)
+                        .map(j => ({
+                            jobId: j.id,
+                            departmentId: j.departmentId,
+                            departmentInfoId: j.departmentInfoId,
+                            workPointId: j.workPointId,
+                            companyId: j.companyId
+                        }))
+                }))
 
-    useEffect(() => {
-        // console.log(companiesData)
-        // console.log(workPointsData)
-        // console.log(departmentsData)
-        // console.log(jobsData)
-    }, [companiesData, workPointsData, departmentsData, jobsData]);
+                setCompanies(companiesData.data)
+                setWorkPoints(workPointsData.data)
+                setDepartments(departmentsData.data)
+                setDepartments(departmentsGrouped)
+                setJobs(jobsGrouped)
+                setCounties(countyData.data)
 
-    const fetchCompanies = useCallback((w = null, j = null, d = null) => {
-        getCompanies()
-            .then((cmp) => {
-                const data = cmp.data
-                    .filter((option) => {
-                        return (option.workPointId === w || w === null) && (option.jobId === j || j === null) && (option.departmentId === d || d === null)
-                    })
-                setCompaniesData(data)
+                setLoading(false)
             })
-    }, [])
-
-    const fetchWorkPoints = useCallback((c = null, j = null, d = null) => {
-        getWorkPoints()
-            .then((cmp) => {
-                const data = cmp.data
-                    .filter((option) => {
-                        return (option.companyId === c || c === null) && (option.jobId === j || j === null) && (option.departmentId === d || d === null)
-                    })
-                setWorkPointsData(data)
-            })
-            .catch(err => console.error(err))
-    }, [])
-
-    const fetchDepartments = useCallback((c = null, w = null, j = null) => {
-        getDepartments()
-            .then((cmp) => {
-                const data = cmp.data
-                    .filter((option) => {
-                        return (option.companyId === c || c === null) && (option.workPointId === w || w === null) && (option.jobId === j || j === null)
-                    })
-
-                const distinct = data.reduce((acc, curr) => {
-                    !acc.some(item => item.departmentNameId === curr.departmentNameId) ? acc.push(curr) : null
-
-                    return acc
-                }, [])
-
-                setDepartmentsData(distinct)
-            })
-    }, [])
-
-    const fetchJobs = useCallback((c = null, w = null, d = null) => {
-        getJobs()
-            .then((cmp) => {
-                const data = cmp.data
-                    .filter((option) => {
-                        return (option.companyId === c || c === null) && (option.workPointId === w || w === null) && (option.departmentId === d || d === null)
-                    })
-
-                const distinct = data.reduce((acc, curr) => {
-                    !acc.some(item => item.job === curr.job) ? acc.push(curr) : null
-
-                    return acc
-                }, [])
-
-                setJobsData(distinct)
-            })
-    }, [])
-
-
-    const handleCompanyChange = value => {
-        fetchWorkPoints(value)
-        fetchDepartments(value)
-        fetchJobs(value)
-
-        setCompanyInput(value)
-        setWorkPointInput(null)
-        // setDepartmentInput(departmentsData.some(dep => dep.departmentNameId === departmentInput) ? departmentInput : null)
-        setJobInput(jobsData.some(job => job.companyId === value && job.id === jobInput) ? jobInput : null)
+            .catch(err => console.log(err))
     }
 
-    const handleWorkPointChange = value => {
-        setWorkPointInput(value)
-        getWorkPointById(value)
-            .then(result => {
-                getCompany(result.data.company)
-                    .then(cmp => setCompanyInput(cmp.data.name))
-                    .catch(err => console.log(err))
-            })
-            .catch(err => console.error(err))
+    const filteredCompanies = companies
+        .filter(c => {
+            if (workPointOption) {
+                const wp = workPoints.find(w => w.id === workPointOption);
+                return wp?.companyId === c.id;
+            }
+            if (departmentOption) {
+                const depInfo = departments.find(di => di.departmentInfoId === departmentOption);
 
-        fetchDepartments(null, value)
-        getWorkPointsDepartments()
-            .then(result => {
-                const checkPromise = getDepartmentById(departmentInput)
-                    .then(info => {
-                        return result.data.some(item =>
-                            item.id === value &&
-                            info.data.department === item.departmentNameId
-                            // info.data.workPoint === value
-                        );
-                    });
+                if (!depInfo) return false;
 
-                checkPromise.then(isMatch => {
-                    isMatch ? setDepartmentInput(departmentInput) : setDepartmentInput(null);
-                });
-            })
-            .catch(err => {
-                console.error(err);
+                return depInfo.departments.some(dp => dp.companyId === c.id);
+            }
+            if (jobOption) {
+                const jobInfo = jobs.find(ji => ji.jobInfoId === jobOption)
+
+                if (!jobInfo) return false
+
+                return jobInfo.jobs.some(j => j.companyId === c.id)
+            }
+            if (countyOption) {
+                return workPoints.some(wp => wp.companyId === c.id && wp.county === countyOption)
+            }
+            return true;
+        })
+        .map(i => ({label: i.name, value: i.id}))
+
+    const filteredWorkPoints = workPoints
+        .filter(wp => {
+            if (companyOption)
+                return wp.companyId === companyOption;
+            if (departmentOption) {
+                const depInfo = departments.find(di => di.departmentInfoId === departmentOption);
+
+                if (!depInfo) return false;
+
+                return depInfo.departments.some(dp => dp.workPointId === wp.id);
+            }
+            if (jobOption) {
+                const jobInfo = jobs.find(ji => ji.jobInfoId === jobOption)
+
+                if (!jobInfo) return false
+
+                return jobInfo.jobs.some(j => j.workPointId === wp.id)
+            }
+            if (countyOption) {
+                return wp.county === countyOption
+            }
+            return true;
+        })
+        .map(i => ({label: i.name, value: i.id}))
+
+    const filteredDepartments = departments
+        .filter(di => {
+            return di.departments.some(dep => {
+                if (workPointOption)
+                    return dep.workPointId === workPointOption;
+                if (companyOption) {
+                    return dep.companyId === companyOption
+                }
+                if (jobOption) {
+                    const jobInfo = jobs.find(ji => ji.jobInfoId === jobOption)
+
+                    if (!jobInfo) return false
+
+                    return jobInfo.jobs.some(j => j.departmentInfoId === di.departmentInfoId)
+                }
+                if (countyOption) {
+                    return workPoints.some(wp => wp.id === dep.workPointId && wp.county === countyOption)
+                }
+                return true;
             });
-    }
+        })
+        .map(i => ({label: i.departmentName, value: i.departmentInfoId}))
 
-    const handleDepartmentChange = value => {
-        setDepartmentInput(value)
-        getDepartmentById(value)
-            .then((dept) => {
-                const departmentNameId = dept.data.department
-
-                getCompaniesDepartments()
-                    .then(result => {
-                        const filteredData = result.data.reduce((acc, curr) => {
-                            if (curr.departmentNameId === departmentNameId && !acc.some((item) => item.id === curr.id))
-                                acc.push(curr)
-
-                            return acc
-                        }, [])
-                        setCompaniesData(filteredData)
-                    })
-                    .catch(err => console.error(err))
-
-                getWorkPointsDepartments()
-                    .then(result => {
-                        const filteredData = result.data.reduce((acc, curr) => {
-                            if (curr.departmentNameId === departmentNameId && !acc.some((item) => item.id === curr.id))
-                                acc.push(curr)
-
-                            return acc
-                        }, [])
-                        setWorkPointsData(filteredData)
-                    })
-
+    const filteredJobs = jobs
+        .filter(ji => {
+            return ji.jobs.some(j => {
+                if (departmentOption) {
+                    return j.departmentInfoId === departmentOption;
+                }
+                if (workPointOption) {
+                    return j.workPointId === workPointOption
+                }
+                if (companyOption) {
+                    return j.companyId === companyOption
+                }
+                if (countyOption) {
+                    return workPoints.some(wp => wp.id === j.workPointId && wp.county === countyOption)
+                }
+                return true;
             })
-            .then(err => console.error(err))
 
-    }
+        })
+        .map(i => ({label: i.jobName, value: i.jobInfoId}))
 
-    const handleJobChange = value => {
-        setJobInput(value)
-    }
+    const filteredCounties = counties
+        .filter(c => {
+            if (companyOption) {
+                return workPoints.some(wp => wp.county === c.name && wp.companyId === companyOption)
+            }
+            if (workPointOption) {
+                const wp = workPoints.find(w => w.id === workPointOption);
+                return wp?.county === c.name;
+            }
+            if (departmentOption) {
+                const depInfo = departments.find(di => di.departmentInfoId === departmentOption);
+
+                if (!depInfo) return false;
+
+                return depInfo.departments.some(dp => workPoints.some(wp => wp.id === dp.workPointId && wp.county === c.name));
+            }
+            if (jobOption) {
+                const jobInfo = jobs.find(ji => ji.jobInfoId === jobOption)
+
+                if (!jobInfo) return false
+
+                return jobInfo.jobs.some(j => workPoints.some(wp => wp.id === j.workPointId && wp.county === c.name));
+            }
+            return true;
+        })
+        .map(i => ({label: i.name, value: i.name}))
+
+    const handlePhoneChange = (e) => {
+        const value = e.target.value;
+        if (/^\d*$/.test(value)) {
+            setPhone(value);
+        }
+    };
 
     const handleReset = () => {
-        setDepartmentInput(null)
-        setCompanyInput(null)
-        setWorkPointInput(null)
-        setJobInput(null)
-
-        fetchCompanies()
-        fetchWorkPoints()
-        fetchDepartments()
-        fetchJobs()
+        setCompanyOption(null)
+        setWorkPointOption(null)
+        setDepartmentOption(null)
+        setJobOption(null)
+        setCountyOption(null)
+        setPhone("")
     }
 
+    useEffect(() => {
+        if (!filteredCompanies.some(f => f.value === companyOption))
+            setCompanyOption(null)
+    }, [filteredCompanies, companyOption]);
+
+    useEffect(() => {
+        if (!filteredWorkPoints.some(f => f.value === workPointOption))
+            setWorkPointOption(null)
+    }, [filteredWorkPoints, workPointOption]);
+
+    useEffect(() => {
+        if (!filteredDepartments.some(f => f.value === departmentOption))
+            setDepartmentOption(null)
+    }, [filteredDepartments, departmentOption]);
+
+    useEffect(() => {
+        if (!filteredJobs.some(f => f.value === jobOption))
+            setJobOption(null)
+    }, [filteredJobs, jobOption]);
+
+    useEffect(() => {
+        if (!filteredCounties.some(f => f.value === countyOption))
+            setCountyOption(null)
+    }, [filteredCounties, countyOption]);
+
+    if (loading) {
+        return (
+            <div className={styles.spinner}></div>
+        );
+    }
+
+
     return (
-        <Space wrap style={{paddingTop: "400px"}} size={"large"}>
-            <Select
-                style={{width: 200}}
-                value={companyInput}
-                onChange={(value) => handleCompanyChange(value)}
-                options={companiesData.map(c => ({label: c.name, value: c.id}))}
-                placeholder={"Companie"}
-            />
-            <Select
-                style={{width: 200}}
-                value={workPointInput}
-                onChange={(value) => handleWorkPointChange(value)}
-                options={workPointsData.map(w => ({label: w.name, value: w.id}))}
-                placeholder={"Punct de lucru"}
-            />
+        <div style={{display: "flex", flexDirection: "column", gap: "20px", maxWidth: "100vw"}}>
+            <div style={{display: "flex", gap: "20px", flexWrap:"wrap"}}>
+                <Select
+                    style={{width: isMobile ? 100 : 200}}
+                    placeholder={"Companie"}
+                    value={companyOption}
+                    onChange={val => setCompanyOption(val)}
+                    options={filteredCompanies}
+                />
+                <Select
+                    style={{width: isMobile ? 100 : 200}}
+                    placeholder={"Punct de lucru"}
+                    value={workPointOption}
+                    onChange={val => setWorkPointOption(val)}
+                    options={filteredWorkPoints}
+                />
+                <Select
+                    style={{width: isMobile ? 100 : 200}}
+                    placeholder={"Departament"}
+                    value={departmentOption}
+                    onChange={val => setDepartmentOption(val)}
+                    options={filteredDepartments}
 
-            <Select
-                style={{width: 200}}
-                value={departmentInput}
-                onChange={(value) => handleDepartmentChange(value)}
-                options={departmentsData.map(w => ({label: w.name, value: w.id}))}
-                placeholder={"Departament"}
-            />
+                />
+            </div>
+            <div style={{display: "flex", gap: "20px"}}>
+                <Select
+                    style={{width: isMobile ? 100 : 200}}
+                    placeholder={"Job"}
+                    value={jobOption}
+                    onChange={val => setJobOption(val)}
+                    options={filteredJobs}
+                />
 
-            <Select
-                style={{width: 200}}
-                value={jobInput}
-                onChange={(value) => handleJobChange(value)}
-                options={jobsData.map(w => ({label: w.job, value: w.id}))}
-                placeholder={"Functie"}
-            />
+                <Select
+                    style={{width: isMobile ? 100 : 200}}
+                    placeholder={"Judet"}
+                    value={countyOption}
+                    onChange={val => setCountyOption(val)}
+                    options={filteredCounties}
+                />
 
-            <Button
-                onClick={handleReset}
-            >
-                Reseteaza filtrele
-            </Button>
-        </Space>
+                <Input
+                    style={{width: isMobile ? 100 : 200}}
+                    placeholder={"Telefon"}
+                    value={phone}
+                    onChange={handlePhoneChange}
+                    maxLength={10}
+                />
+            </div>
 
+            <div style={{display: "flex", justifyContent:"center", gap: "20px"}}>
+                <Button
+                    onClick={handleReset}
+                    type={"primary"}
+                    style={{width: 200}}
+                >
+                    Reseteaza filtrele
+                </Button>
+            </div>
+        </div>
     );
-};
+
+}

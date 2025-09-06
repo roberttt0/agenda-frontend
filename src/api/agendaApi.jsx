@@ -11,8 +11,6 @@ export const getWorkPoints = () => api.get('/work-points');
 export const getJobs = () => api.get('/jobs');
 export const getEmployeesByWorkPointId = (id) => api.get(`/work-points/${id}/employees`)
 export const getWorkPointById = (id) => api.get(`/work-points/${id}`)
-export const getCompany = (id) => api.get(`/companies/${id}`)
-export const getDepartmentById = (id) => api.get(`/departments/${id}`)
 export const getDepartmentsInfo = () => api.get(`/departments-info`)
-export const getCompaniesDepartments = () => api.get(`/companies/departments`)
-export const getWorkPointsDepartments = () => api.get(`/work-points/departments`)
+export const getJobsInfo = () => api.get(`/jobs-information`)
+export const getCounties = () => api.get(`/work-points/counties`)
