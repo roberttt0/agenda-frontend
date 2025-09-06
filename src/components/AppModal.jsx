@@ -32,7 +32,7 @@ const AppModal = () => {
 
     return (
         <>
-            <Button icon={<SearchOutlined/>} iconPosition={"end"} onClick={showModal}>
+            <Button icon={<SearchOutlined/>} iconPosition={"end"} onClick={showModal} key={'searchKey'}>
                 Caută
             </Button>
             <Modal
@@ -41,6 +41,7 @@ const AppModal = () => {
                 onCancel={handleCancel}
                 footer={null}
                 styles={modalStyles}
+                style={{display: "flex", justifyContent:"center"}}
                 afterOpenChange={(open) => open && inputRef.current?.focus()}
             >
                 <AppAutoComplete desktopWidth={"800px"} mobileWidth={"300px"} mobilePlaceholder={"Cauta in agenda"}

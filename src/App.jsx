@@ -4,6 +4,7 @@ import {ConfigProvider} from "antd";
 import {BrowserRouter, Route, Routes} from "react-router-dom";
 import Info from "./pages/Info.jsx";
 import Test from "./pages/Test.jsx";
+import WorkPoints from "./pages/WorkPoints.jsx";
 
 function App() {
 
@@ -37,6 +38,7 @@ function App() {
                     <Route path={'/'} element={<Home />} />
                     <Route path={'/info'} element={<Info />} />
                     <Route path={'/test'} element={<Test />} />
+                    <Route path={'/work-points'} element={<WorkPoints />} />
                 </Routes>
             </BrowserRouter>
         </ConfigProvider>

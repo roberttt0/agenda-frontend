@@ -1,23 +1,22 @@
-import React, {useEffect, useState} from "react";
-import {Button, Layout} from "antd";
+import React, {useEffect, useMemo, useState} from "react";
+import {Layout} from "antd";
 import styles from '../styles/info.module.css'
-import {FileTextOutlined, UserOutlined} from "@ant-design/icons";
-import {useMediaQuery} from "react-responsive";
-import AppAutoComplete from "../components/AppAutoComplete.jsx";
-import logo from "../assets/dedeman_logo.png"
 import AppCard from "../components/AppCard.jsx";
-import {useLocation} from "react-router-dom";
 import {getCompanies, getDepartments, getEmployees, getWorkPoints} from "../api/agendaApi.jsx";
-import queryString from "query-string";
-import AppModal from "../components/AppModal.jsx";
+import {normalizeString} from "../services/AppService.jsx";
+import loadingStyles from '../styles/loading.module.css'
+import SearchHeader from "../components/SearchHeader.jsx";
+import queryString from 'query-string';
+import {useLocation} from "react-router-dom";
 
 export default function Info() {
-    const isMobile = useMediaQuery({query: '(max-width: 768px)'});
 
+    const [loading, setLoading] = useState(true);
     const location = useLocation();
 
-    const parsed = queryString.parse(location.search);
-    const search = parsed.value || ''
+    const filters = useMemo(() => {
+        return queryString.parse(location.search, {parseNumbers: true});
+    }, [location.search]);
 
     const [data, setData] = useState([])
 
@@ -56,61 +55,51 @@ export default function Info() {
                         object: i
                     }))
                 ].filter(option => {
-                        const queryWords = normalizeString(search).split(/\s+/).filter(Boolean);
+                        const queryWords = normalizeString(filters.value).split(/\s+/).filter(Boolean);
                         const optionValue = option.value.toLowerCase();
+                        const hasFilters = Object.entries(filters)
+                            .filter(([key]) => key !== "value")
+                            .some(([, val]) => Boolean(val));
+                        const isEmpty = v => v === null || v === "" || v === undefined;
 
+                        if (hasFilters) {
+                            if (option.type === "employee") {
+                                return (
+                                    queryWords.every(word => optionValue.includes(word)) &&
+                                    (isEmpty(filters.company) || option.object.companyId === filters.company) &&
+                                    (isEmpty(filters.workPoint) || option.object.workPointId === filters.workPoint) &&
+                                    (isEmpty(filters.department) || option.object.departmentInfoId === filters.department) &&
+                                    (isEmpty(filters.job) || option.object.jobInformationId === filters.job) &&
+                                    (isEmpty(filters.county) ||
+                                        workPoints.data.find(wp => wp.id === option.object.workPointId)?.county === filters.county) &&
+                                    (isEmpty(filters.phone) || option.object.phoneNumber.includes(filters.phone))
+                                );
+
+                            }
+                            return false
+                        }
                         return queryWords.every(word => optionValue.includes(word));
                     }
                 );
-
                 setData(filteredOptions);
-
+                setLoading(false)
             })
             .catch(err => {
+                setLoading(false)
                 console.error(err);
             });
 
-    }, [search])
+    }, [filters])
 
-    const normalizeString = (str) => {
-        return str
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "")
-            .toLowerCase();
+    if (loading) {
+        return (
+            <div className={loadingStyles.spinner}></div>
+        );
     }
 
     return (
         <Layout className={styles.infoLayout}>
-            <Layout.Header className={styles.infoHeader}>
-                <div className={styles.logo}>
-                    <Button
-                        style={{backgroundImage: `url(${logo})`, backgroundSize: "cover", backgroundPosition: "center",
-                        width: isMobile ? "32px" : "40px",
-                            marginLeft : isMobile ? "10px" : "20px"
-                        }}
-                        size={isMobile ? "middle" : "large"}
-                        href={'/'}
-                    />
-                </div>
-                <div className={styles.searchBar}>
-                    {
-                        isMobile ? <AppModal /> :
-                            <AppAutoComplete mobileWidth={"180px"} desktopWidth={"300px"} mobileSize={"medium"}
-                                             desktopSize={"medium"} mobileSufix={"20px"} desktopSufix={"22px"}
-                                             placeholder={"Cauta in agenda"} mobilePlaceholder={"Cauta in agenda"}/>
-                    }
-                </div>
-                <div className={styles.icons}>
-                    <Button
-                        icon={<UserOutlined/>}
-                        size={isMobile ? "middle" : "large"}
-                    />
-                    <Button
-                        icon={<FileTextOutlined/>}
-                        size={isMobile ? "middle" : "large"}
-                    />
-                </div>
-            </Layout.Header>
+            <SearchHeader/>
             <Layout.Content className={styles.infoContent}>
                 {
                     data.length ? (

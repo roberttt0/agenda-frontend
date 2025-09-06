@@ -52,6 +52,19 @@
     justify-content: flex-end;
 }
 
+.workPointsLayout {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding-top: 20px
+}
+
+.cards {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
 @media (min-width: 768px) {
     .icons {
         padding-right: 60px;
@@ -62,5 +75,59 @@
         flex-wrap: wrap;
         padding-top: 60px;
         padding-bottom: 60px;
+    }
+}
+
+.infoLetterLayout {
+    display: flex;
+    flex-direction: row;
+}
+
+.category {
+    display: flex;
+    flex-direction: column;
+}
+
+.letter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    width: 50px;
+    font-size: 16px;
+    font-weight: 500;
+    top: 0;
+    position: sticky;
+    color: #595959;
+}
+
+.letterBackground {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50px;
+    border-radius: 8px 8px 8px 8px;
+
+}
+
+.workPointsTitle {
+    display: flex;
+    font-size: 20px;
+    color: #595959;
+    gap: 10px;
+    padding-top: 20px;
+    align-items: center;
+    font-weight: 500;
+    padding-left: 10px;
+    font-style: italic;
+}
+
+@media (max-width: 768px) {
+    .letterBackground {
+        width: 30px;
+    }
+
+    .letter {
+        width: 30px;
     }
 }

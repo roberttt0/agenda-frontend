@@ -1,0 +1,41 @@
+.card {
+    display: flex;
+    gap:50px;
+    flex-direction: row;
+}
+
+.name, .address, .company, .county, .phoneNumber {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.name {
+    width: 25%;
+    font-weight: bold;
+}
+
+.address {
+    width: 25%;
+    color: #595959
+}
+
+.company {
+    width: 10%;
+}
+
+.phoneNumber {
+    width: 10%;
+    color: #595959
+}
+
+@media (max-width: 768px) {
+    .card {
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .name {
+        width: auto
+    }
+}
