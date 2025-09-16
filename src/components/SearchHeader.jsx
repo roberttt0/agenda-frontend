@@ -1,14 +1,17 @@
-import React from "react";
-import {Button, Layout} from "antd";
+import React, {useContext} from "react";
+import {Button, Dropdown, Layout} from "antd";
 import styles from "../styles/info.module.css";
 import logo from "../assets/dedeman_logo.png";
 import AppModal from "../components/AppModal.jsx";
 import AppAutoComplete from "../components/AppAutoComplete.jsx";
 import {FileTextOutlined, UserOutlined} from "@ant-design/icons";
 import {useMediaQuery} from "react-responsive";
+import {getMenu} from "../services/AppService.jsx";
+import {UserContext} from "../App.jsx";
 
 export default function SearchHeader() {
     const isMobile = useMediaQuery({query: '(max-width: 768px)'});
+    const {user, setUser} = useContext(UserContext)
 
     return (
         <Layout.Header className={styles.infoHeader}>
@@ -32,10 +35,25 @@ export default function SearchHeader() {
                 }
             </div>
             <div className={styles.icons}>
-                <Button
-                    icon={<UserOutlined/>}
-                    size={isMobile ? "middle" : "large"}
-                />
+                {
+                    !user.name ? (
+                            <Button
+                                icon={<UserOutlined/>}
+                                size={isMobile ? "middle" : "large"}
+                                href={'/login'}
+                            >
+                            </Button>
+                        ) :
+                        <Dropdown menu={{items: getMenu(user)}}
+                                  placement="bottomLeft"
+                        >
+                            <Button
+                                icon={<UserOutlined/>}
+                                size={isMobile ? "middle" : "large"}
+                            >
+                            </Button>
+                        </Dropdown>
+                }
                 <Button
                     icon={<FileTextOutlined/>}
                     size={isMobile ? "middle" : "large"}

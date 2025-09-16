@@ -1,11 +1,12 @@
-import {Button, Layout} from "antd";
+import {Button, Dropdown, Layout} from "antd";
 import styles from '../styles/home.module.css'
 import {FileTextOutlined, UserOutlined} from "@ant-design/icons";
 import logo from "../assets/Logo_Dedeman.svg"
 import AppAutoComplete from "../components/AppAutoComplete.jsx";
-import {useState} from "react";
+import {useContext, useState} from "react";
 import AdvancedSearchSelect from "../components/AdvancedSearchSelect.jsx";
-import {useIsMobile} from "../services/AppService.jsx";
+import {getMenu, useIsMobile} from "../services/AppService.jsx";
+import {UserContext} from "../App.jsx";
 
 export default function Home() {
 
@@ -21,16 +22,32 @@ export default function Home() {
     const isMobile = useIsMobile()
     const currentYear = new Date().getFullYear();
     const [showAdvanced, setShowAdvanced] = useState(false);
+    const {user, setUser} = useContext(UserContext)
 
     return (
         <Layout className={styles.homeLayout}>
             <Layout.Header className={styles.homeHeader}>
-                <Button
-                    icon={<UserOutlined/>}
-                    style={isMobile ? null : {width: "140px"}}
-                >
-                    {isMobile ? null : "Autentificare"}
-                </Button>
+                {
+                    !user.name ? (
+                            <Button
+                                icon={<UserOutlined/>}
+                                style={isMobile ? null : {width: "140px"}}
+                                href={'/login'}
+                            >
+                                {isMobile ? null : "Autentificare"}
+                            </Button>
+                        ) :
+                        <Dropdown menu={{items: getMenu(user)}}
+                                  placement="bottomLeft"
+                        >
+                            <Button
+                                icon={<UserOutlined/>}
+                                style={isMobile ? null : {width: "140px"}}
+                            >
+                                {isMobile ? null : "Contul meu"}
+                            </Button>
+                        </Dropdown>
+                }
                 <Button
                     icon={<FileTextOutlined/>}
                     style={isMobile ? null : {width: "140px"}}
@@ -38,6 +55,7 @@ export default function Home() {
                     {isMobile ? null : "Documente"}
                 </Button>
             </Layout.Header>
+            {user.name && <div style={{display: "flex", padding: 40, fontSize: 16}}>Bine ai venit {user.name}</div>}
             <Layout.Content className={styles.homeContent}>
                 <a href={"/"}><img src={logo} width={isMobile ? '240px' : '320px'} alt={"logo"}/></a>
                 <AppAutoComplete desktopWidth={"800px"} mobileWidth={"260px"} mobilePlaceholder={"Cauta in agenda"}
@@ -77,7 +95,11 @@ export default function Home() {
                     )}
                 </div>
             </Layout.Content>
-            <Layout.Footer className={styles.homeFooter}>
+            <Layout.Footer style={{
+                backgroundColor: "#eeeeee",
+                display: 'flex',
+                justifyContent: "flex-end"
+            }}>
                 © {currentYear} Dedeman. Toate drepturile rezervate.
             </Layout.Footer>
         </Layout>
