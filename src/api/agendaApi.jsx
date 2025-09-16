@@ -14,3 +14,11 @@ export const getWorkPointById = (id) => api.get(`/work-points/${id}`)
 export const getDepartmentsInfo = () => api.get(`/departments-info`)
 export const getJobsInfo = () => api.get(`/jobs-information`)
 export const getCounties = () => api.get(`/work-points/counties`)
+export const register = (user, pass) => axios.post('http://localhost/register', {
+    "username": user,
+    "password": pass
+} )
+export const login = (user, pass) => axios.post('http://localhost/login', {
+    "username": user,
+    "password": pass
+} )

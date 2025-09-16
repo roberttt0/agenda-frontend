@@ -1,10 +1,10 @@
-import AdvancedSearchSelect from "../components/AdvancedSearchSelect.jsx";
+import LoginForm from "../components/LoginForm.jsx";
 
 
 export default function Test() {
     return (
-        <div style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
-            <AdvancedSearchSelect />
+        <div style={{display: "flex", justifyContent: "center", alignItems: "center", paddingTop: 80}}>
+            <LoginForm/>
         </div>
     )
 }
